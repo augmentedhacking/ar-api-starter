@@ -18,9 +18,7 @@ struct ARViewContainer: UIViewRepresentable {
         SimpleARView(frame: .zero, viewModel: viewModel)
     }
     
-    func updateUIView(_ arView: SimpleARView, context: Context) {
-        arView.updateWithSliderValue(value: viewModel.sliderValue)
-    }
+    func updateUIView(_ arView: SimpleARView, context: Context) { }
 }
 
 class SimpleARView: ARView {
@@ -31,7 +29,6 @@ class SimpleARView: ARView {
     var planeAnchor: AnchorEntity?
 
     var sphere: SphereEntity!
-    var box: BoxEntity!
 
     init(frame: CGRect, viewModel: ViewModel) {
         self.viewModel = viewModel
@@ -52,9 +49,7 @@ class SimpleARView: ARView {
         UIApplication.shared.isIdleTimerDisabled = true
         
         setupScene()
-        
         setupEntities()
-
         setupSubscriptions()
     }
         
@@ -76,7 +71,10 @@ class SimpleARView: ARView {
 
         // Observe slider value.
         viewModel.$sliderValue.sink { [weak self] value in
-            self?.updateWithSliderValue(value: value)
+            guard let self else { return }
+            
+            let scale = value * 2
+            sphere.scale = [scale, scale, scale]
         }
         .store(in: &subscriptions)
     }
@@ -88,13 +86,13 @@ class SimpleARView: ARView {
         }
     }
 
+
     // Define entities here.
     func setupEntities() {
         sphere = SphereEntity(name: "sphere", radius: 0.1, imageName: "checker.png")
-
-        box = BoxEntity(name: "box", width: 0.2, height: 0.2, depth: 0.2, imageName: "checker.png")
     }
     
+
     // Reset plane anchor and position entities.
     func resetScene() {
         // Reset plane anchor. //
@@ -104,44 +102,9 @@ class SimpleARView: ARView {
         arView.scene.addAnchor(planeAnchor!)
         
         // Position and add sphere to scene.
-        sphere.position.x = -0.2
-        sphere.position.y = 0.1
+        sphere.position.x = 0
+        sphere.position.y = 0
         sphere.position.z = 0
         planeAnchor?.addChild(sphere)
-
-        // Position and add box to scene.
-        box.position.x = 0.2
-        box.position.y = 0.1
-        box.position.z = 0
-        planeAnchor?.addChild(box)
-    }
-    
-    func updateWithSliderValue(value: Float) {
-        let scale = value * 2
-        sphere.scale = [scale, scale, scale]
-
-        updateSpiralStaircase()
-    }
-    
-    func updateSpiralStaircase() {
-        // Add/remove spiral staircase.
-        box.children.removeAll()
-        var lastBoxEntity = box!
-        for _ in 0..<(Int(viewModel.sliderValue * 10)) {
-            // Create and position new entity.
-            let newEntity = box.clone(recursive: false)
-            newEntity.position.x = 0.1
-            newEntity.position.y = 0.1
-            newEntity.position.z = 0
-
-            // Rotate on y-axis by 45 degrees.
-            newEntity.orientation = simd_quatf(angle: .pi / 4, axis: [0, 1, 0])
-
-            // Add to last entity in tree.
-            lastBoxEntity.addChild(newEntity)
-            
-            // Set last entity used.
-            lastBoxEntity = newEntity
-        }
     }
 }

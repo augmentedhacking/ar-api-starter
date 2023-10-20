@@ -32,9 +32,6 @@ struct ContentView: View {
 
             // Slider.
             VStack {
-                Text(viewModel.dateString)
-                    .font(.title)
-                
                 Spacer()
                 
                 Slider(value: $viewModel.sliderValue)
