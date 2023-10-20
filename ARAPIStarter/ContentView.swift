@@ -29,7 +29,8 @@ struct ContentView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .padding()
- 
+
+            // Slider.
             VStack {
                 Text(viewModel.dateString)
                     .font(.title)
