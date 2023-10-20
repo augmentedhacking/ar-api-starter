@@ -43,8 +43,6 @@ struct ContentView: View {
             }
             .padding(.vertical, 80)
         }
-        .edgesIgnoringSafeArea(.all)
-        .statusBar(hidden: true)
     }
 }
 

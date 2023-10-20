@@ -15,6 +15,8 @@ struct APIStarterApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView(viewModel: viewModel)
+                .edgesIgnoringSafeArea(.all)
+                .statusBar(hidden: true)
         }
     }
 }
